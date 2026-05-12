@@ -1,0 +1,17 @@
+/* Minimaler Reset — restliches Styling kommt aus App.css */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: #050505;
+  color: #f5f5f5;
+}
+
+#root {
+  width: 100%;
+  max-width: none;
+  display: block;
+}
