@@ -1,0 +1,411 @@
+/* ============================================================
+   DonerExperience — cinematic 3D scroll story
+   ------------------------------------------------------------
+   The outer .de-root reserves the scroll height (5x 100vh).
+   .de-sticky holds the Canvas + overlay text and is sticky.
+   ============================================================ */
+
+.de-root {
+  position: relative;
+  width: 100%;
+  background: #050505;
+  color: #f5f5f5;
+  isolation: isolate;
+}
+
+.de-spacer {
+  width: 100%;
+  height: 100vh;
+}
+
+.de-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---------- Canvas layer ---------- */
+
+.de-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.de-canvas canvas {
+  display: block;
+}
+
+.de-canvas__loader {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 208, 0, 0.05) 0%,
+    transparent 70%
+  );
+  animation: deLoaderPulse 2s ease-in-out infinite;
+}
+
+@keyframes deLoaderPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ---------- Overlay container ---------- */
+
+.de-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6vw;
+}
+
+.de-overlay > * {
+  pointer-events: auto;
+}
+
+/* ---------- Stage card ---------- */
+
+.de-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8vw;
+  will-change: transform, opacity, filter;
+}
+
+.de-stage__inner {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.de-stage__eyebrow {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  color: #ffd000;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.de-stage__eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: #ffd000;
+  box-shadow: 0 0 12px rgba(255, 208, 0, 0.7);
+}
+
+.de-stage__headline {
+  font-family: "Bebas Neue", "Inter", sans-serif;
+  font-size: clamp(56px, 9vw, 140px);
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 0 90px rgba(255, 208, 0, 0.16);
+}
+
+.de-stage__line {
+  display: block;
+}
+
+.de-stage__sub {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: clamp(16px, 1.6vw, 22px);
+  font-weight: 300;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 480px;
+  margin: 0;
+}
+
+/* Final stage: center it for the big reveal */
+.de-stage--final {
+  justify-content: center;
+  text-align: center;
+}
+
+.de-stage--final .de-stage__inner {
+  align-items: center;
+}
+
+.de-stage--final .de-stage__sub {
+  text-align: center;
+}
+
+/* ---------- Buttons ---------- */
+
+.de-btn {
+  --c: #ffd000;
+  align-self: flex-start;
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 30px;
+  background: var(--c);
+  color: #050505;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 100px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease, background 0.4s ease, color 0.4s ease;
+  box-shadow: 0 0 0 rgba(255, 208, 0, 0);
+}
+
+.de-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 60px rgba(255, 208, 0, 0.55),
+    0 0 120px rgba(255, 208, 0, 0.22);
+}
+
+.de-btn__icon {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.de-btn:hover .de-btn__icon {
+  transform: translateX(4px);
+}
+
+.de-stage--final .de-btn {
+  align-self: center;
+  padding: 22px 40px;
+  font-size: 14px;
+}
+
+/* ---------- Glassmorphic Preorder Pill (Stage 4) ---------- */
+
+.de-pill {
+  margin-top: 24px;
+  width: min(420px, 100%);
+  padding: 18px;
+  background: rgba(18, 18, 18, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(255, 208, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.de-pill__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.de-pill__row--input {
+  gap: 8px;
+}
+
+.de-pill__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 208, 0, 0.25);
+  border-radius: 100px;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: #ffd000;
+  font-weight: 600;
+  background: rgba(255, 208, 0, 0.05);
+}
+
+.de-pill__chip--ghost {
+  color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
+}
+
+.de-pill__dot {
+  width: 7px;
+  height: 7px;
+  background: #ffd000;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 208, 0, 0.8);
+  animation: dePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes dePulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.6;
+  }
+}
+
+.de-pill__divider {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+.de-pill__input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 100px;
+  padding: 12px 16px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.de-pill__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.de-pill__input:hover {
+  border-color: rgba(255, 208, 0, 0.3);
+}
+
+.de-pill__send {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffd000;
+  color: #050505;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+  box-shadow: 0 0 20px rgba(255, 208, 0, 0.4);
+}
+
+.de-pill__send:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 35px rgba(255, 208, 0, 0.7);
+}
+
+/* ---------- Scroll Hint ---------- */
+
+.de-hint {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 3;
+}
+
+.de-hint__label {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.de-hint__line {
+  width: 1px;
+  height: 50px;
+  background: linear-gradient(180deg, #ffd000, transparent);
+  box-shadow: 0 0 14px rgba(255, 208, 0, 0.7);
+  transform-origin: top center;
+  animation: deScrollLine 1.8s ease-in-out infinite;
+}
+
+@keyframes deScrollLine {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* ---------- Progress Indicator ---------- */
+
+.de-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  z-index: 3;
+}
+
+.de-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd000 0%, #ffe066 100%);
+  box-shadow: 0 0 14px rgba(255, 208, 0, 0.7);
+  transform-origin: left center;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 768px) {
+  .de-stage {
+    padding: 0 6vw;
+    align-items: flex-end;
+    padding-bottom: 14vh;
+  }
+
+  .de-stage--final {
+    align-items: center;
+    padding-bottom: 0;
+  }
+
+  .de-pill {
+    width: 100%;
+  }
+}

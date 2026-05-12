@@ -25,6 +25,7 @@ import {
   ShoppingBag,
   ArrowRight,
 } from "lucide-react";
+import DonerExperience from "./components/DonerExperience";
 import "./App.css";
 
 /* ============================================================
@@ -983,7 +984,7 @@ export default function App() {
         {showIntro && <Intro key="intro" />}
       </AnimatePresence>
 
-      <Hero />
+      <DonerExperience />
       <MenuCards />
       <ValueProp />
       <OrderSystem />
